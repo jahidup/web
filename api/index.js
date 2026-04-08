@@ -77,24 +77,19 @@ let cachedDb = null;
 async function connectToDatabase() {
   if (cachedDb) return cachedDb;
   if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined');
+    throw new Error('MONGODB_URI environment variable is not set');
   }
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 10000,
-    });
-    cachedDb = conn;
-    console.log('✅ MongoDB connected');
+  const conn = await mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 10000,
+  });
+  cachedDb = conn;
+  console.log('✅ MongoDB connected');
 
-    // Seed data only once
-    await seedApiConfigs();
-    await seedDefaultUser();
-    return conn;
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    throw err;
-  }
+  // Seed only once
+  await seedApiConfigs();
+  await seedDefaultUser();
+  return conn;
 }
 
 async function seedApiConfigs() {
@@ -117,7 +112,7 @@ async function seedDefaultUser() {
       passwordHash,
       dailyLimit: 200
     });
-    console.log('✅ Default user created');
+    console.log('✅ Default user created: Jahid@Ansari / Jahid@2026$');
   }
 }
 
@@ -149,9 +144,10 @@ function authAdmin(req, res, next) {
   }
 }
 
-// ==================== Routes (with DB connection ensured) ====================
+// Helper to wrap async routes
 const wrap = fn => (req, res, next) => fn(req, res, next).catch(next);
 
+// ==================== User Routes ====================
 app.post('/user/login', wrap(async (req, res) => {
   await connectToDatabase();
   const { userId, password } = req.body;
@@ -219,7 +215,7 @@ app.get('/api', authUser, wrap(async (req, res) => {
   user.searchesToday += 1;
   await user.save();
 
-  // Clean response
+  // Clean response (blacklist)
   function cleanObject(obj, blacklist) {
     if (!obj || typeof obj !== 'object') return obj;
     const newObj = Array.isArray(obj) ? [] : {};
@@ -237,7 +233,7 @@ app.get('/api', authUser, wrap(async (req, res) => {
   res.json(result);
 }));
 
-// Admin routes (add similar wrap)
+// ==================== Admin Routes ====================
 app.post('/admin/login', wrap(async (req, res) => {
   const { username, password, pin, key } = req.body;
   if (username === process.env.ADMIN_USERNAME &&
@@ -260,11 +256,21 @@ app.get('/admin/users', authAdmin, wrap(async (req, res) => {
 app.post('/admin/users', authAdmin, wrap(async (req, res) => {
   await connectToDatabase();
   const { userId, username, email, password, dailyLimit } = req.body;
-  if (!userId || !password) return res.status(400).json({ error: 'userId and password required' });
+  if (!userId || !password) {
+    return res.status(400).json({ error: 'User ID and password are required' });
+  }
   const exists = await User.findOne({ userId });
-  if (exists) return res.status(409).json({ error: 'User ID already exists' });
+  if (exists) {
+    return res.status(409).json({ error: 'User ID already exists' });
+  }
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = new User({ userId, username, email, passwordHash, dailyLimit: dailyLimit || 100 });
+  const user = new User({
+    userId,
+    username: username || '',
+    email: email || '',
+    passwordHash,
+    dailyLimit: dailyLimit || 100
+  });
   await user.save();
   res.json({ success: true, user: { userId, username, email, dailyLimit: user.dailyLimit } });
 }));
@@ -321,7 +327,7 @@ app.post('/admin/send-message', authAdmin, wrap(async (req, res) => {
   res.json({ success: true });
 }));
 
-// Serve HTML files
+// ==================== Serve HTML ====================
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
@@ -329,5 +335,10 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'admin.html'));
 });
 
-// Export the Express app for Vercel
+// ==================== Global Error Handler ====================
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ error: err.message || 'Internal server error' });
+});
+
 module.exports = app;
