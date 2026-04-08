@@ -6,261 +6,32 @@
     <title>NULL PROTOCOL - Admin Console</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #0a0c15;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            color: #e2e8f0;
-        }
-
-        /* Admin Login Overlay */
-        .admin-login {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 20% 0%, #0ea5e9, #020617);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .login-card {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 24px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            width: 360px;
-            padding: 28px 24px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .login-header i {
-            font-size: 40px;
-            color: #00E1FF;
-            background: rgba(0, 225, 255, 0.1);
-            padding: 12px;
-            border-radius: 60px;
-        }
-
-        .login-header h2 {
-            margin-top: 12px;
-            font-size: 22px;
-        }
-
-        .login-input {
-            width: 100%;
-            background: #020617;
-            border: 1px solid #334155;
-            border-radius: 40px;
-            padding: 10px 16px;
-            margin-bottom: 14px;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .login-input:focus {
-            border-color: #00E1FF;
-            box-shadow: 0 0 0 2px rgba(0, 225, 255, 0.2);
-        }
-
-        .login-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #00E1FF, #00FFC6);
-            border: none;
-            border-radius: 40px;
-            padding: 10px;
-            font-weight: bold;
-            color: #020617;
-            cursor: pointer;
-            font-size: 15px;
-            margin-top: 8px;
-            transition: 0.2s;
-        }
-
-        .login-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 225, 255, 0.4);
-        }
-
-        .login-error {
-            color: #fb7185;
-            font-size: 12px;
-            margin-top: 12px;
-            text-align: center;
-        }
-
-        /* Admin Dashboard */
-        .admin-dashboard {
-            display: none;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: #1e293b;
-            border-radius: 60px;
-            padding: 6px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            border: 1px solid #334155;
-        }
-
-        .nav-item {
-            padding: 8px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: 0.2s;
-            background: transparent;
-            color: #94a3b8;
-        }
-
-        .nav-item i {
-            margin-right: 8px;
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #00E1FF, #00FFC6);
-            color: #020617;
-            box-shadow: 0 2px 8px rgba(0, 225, 255, 0.4);
-        }
-
-        .logout-btn {
-            margin-left: auto;
-            background: #ef4444;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 40px;
-            color: white;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        /* Cards & Tables */
-        .card {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #334155;
-        }
-
-        .card h3 {
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #00E1FF;
-        }
-
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 16px;
-            align-items: flex-end;
-        }
-
-        .form-group {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            margin-bottom: 4px;
-            color: #94a3b8;
-        }
-
-        input, select, textarea {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 8px 12px;
-            color: white;
-            width: 100%;
-            font-size: 13px;
-        }
-
-        button {
-            background: #00E1FF;
-            border: none;
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button.danger {
-            background: #ef4444;
-            color: white;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        th, td {
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #334155;
-        }
-
-        th {
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .status-blocked {
-            background: #ef4444;
-            color: white;
-        }
-
-        .status-active {
-            background: #22c55e;
-            color: #020617;
-        }
-
-        .search-logs {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .refresh-icon {
-            cursor: pointer;
-            margin-left: 12px;
-            color: #00E1FF;
-        }
+        /* (same styles as before - keep your existing CSS) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0c15; font-family: 'Segoe UI', system-ui; color: #e2e8f0; }
+        .admin-login { position: fixed; inset: 0; background: radial-gradient(circle at 20% 0%, #0ea5e9, #020617); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-card { background: rgba(15,23,42,0.95); backdrop-filter: blur(12px); border-radius: 24px; border: 1px solid rgba(56,189,248,0.3); width: 360px; padding: 28px 24px; }
+        .login-header { text-align: center; margin-bottom: 24px; }
+        .login-header i { font-size: 40px; color: #00E1FF; background: rgba(0,225,255,0.1); padding: 12px; border-radius: 60px; }
+        .login-input { width: 100%; background: #020617; border: 1px solid #334155; border-radius: 40px; padding: 10px 16px; margin-bottom: 14px; color: white; }
+        .login-btn { width: 100%; background: linear-gradient(135deg, #00E1FF, #00FFC6); border: none; border-radius: 40px; padding: 10px; font-weight: bold; cursor: pointer; }
+        .admin-dashboard { display: none; max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .navbar { background: #1e293b; border-radius: 60px; padding: 6px 20px; display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+        .nav-item { padding: 8px 20px; border-radius: 40px; cursor: pointer; background: transparent; color: #94a3b8; }
+        .nav-item.active { background: linear-gradient(135deg, #00E1FF, #00FFC6); color: #020617; }
+        .logout-btn { margin-left: auto; background: #ef4444; border: none; padding: 8px 18px; border-radius: 40px; color: white; cursor: pointer; }
+        .card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 24px; border: 1px solid #334155; }
+        .card h3 { margin-bottom: 16px; color: #00E1FF; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; align-items: flex-end; }
+        .form-group { flex: 1; min-width: 150px; }
+        .form-group label { display: block; font-size: 12px; margin-bottom: 4px; color: #94a3b8; }
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 8px 12px; color: white; width: 100%; }
+        button { background: #00E1FF; border: none; border-radius: 40px; padding: 8px 16px; font-weight: 600; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #334155; }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
+        .status-blocked { background: #ef4444; color: white; }
+        .status-active { background: #22c55e; color: #020617; }
     </style>
 </head>
 <body>
@@ -271,14 +42,14 @@
         <div class="login-header">
             <i class="fa-solid fa-shield-halved"></i>
             <h2>Admin Authentication</h2>
-            <div style="font-size: 12px; color: #94a3b8;">4‑step secure access</div>
+            <div style="font-size: 12px;">4‑step secure access</div>
         </div>
         <input type="text" id="adminUsername" class="login-input" placeholder="Username">
         <input type="password" id="adminPassword" class="login-input" placeholder="Password">
         <input type="text" id="adminPin" class="login-input" placeholder="4-digit PIN" maxlength="4">
         <input type="text" id="adminSecurityKey" class="login-input" placeholder="Security Key">
         <button id="adminLoginBtn" class="login-btn"><i class="fa-solid fa-key"></i> Unlock Console</button>
-        <div id="adminLoginError" class="login-error"></div>
+        <div id="adminLoginError" style="color:#fb7185; margin-top:10px; text-align:center;"></div>
     </div>
 </div>
 
@@ -310,9 +81,7 @@
             <h3><i class="fa-solid fa-database"></i> Registered Users <span id="userCount"></span></h3>
             <div style="overflow-x: auto;">
                 <table id="usersTable">
-                    <thead>
-                        <tr><th>User ID</th><th>Username</th><th>Email</th><th>Daily Limit</th><th>Searches Today</th><th>Status</th><th>Admin Message</th><th>Actions</th></tr>
-                    </thead>
+                    <thead><tr><th>User ID</th><th>Username</th><th>Email</th><th>Daily Limit</th><th>Searches Today</th><th>Status</th><th>Admin Message</th><th>Actions</th></tr></thead>
                     <tbody id="usersTableBody"></tbody>
                 </table>
             </div>
@@ -325,9 +94,7 @@
             <h3><i class="fa-solid fa-sliders-h"></i> API Endpoints Configuration</h3>
             <div style="overflow-x: auto;">
                 <table id="apiTable">
-                    <thead>
-                        <tr><th>API Key</th><th>URL</th><th>Param</th><th>Description</th><th>Blacklist (comma)</th><th>Action</th></tr>
-                    </thead>
+                    <thead><tr><th>API Key</th><th>URL</th><th>Param</th><th>Description</th><th>Blacklist (comma)</th><th>Action</th></tr></thead>
                     <tbody id="apiTableBody"></tbody>
                 </table>
             </div>
@@ -337,12 +104,12 @@
     <!-- Search Logs Tab -->
     <div id="logsTab" class="tab" style="display:none;">
         <div class="card">
-            <h3><i class="fa-solid fa-magnifying-glass"></i> Search Logs <i class="fa-solid fa-rotate-right refresh-icon" id="refreshLogsIcon"></i></h3>
+            <h3><i class="fa-solid fa-magnifying-glass"></i> Search Logs <i class="fa-solid fa-rotate-right refresh-icon" id="refreshLogsIcon" style="cursor:pointer; margin-left:12px;"></i></h3>
             <div class="form-row">
                 <div class="form-group"><label>Filter by User ID</label><select id="logUserFilter"><option value="">All Users</option></select></div>
                 <div><button id="applyLogFilter"><i class="fa-solid fa-filter"></i> Filter</button></div>
             </div>
-            <div class="search-logs">
+            <div style="max-height:500px; overflow-y:auto;">
                 <table id="logsTable">
                     <thead><tr><th>User ID</th><th>API Type</th><th>Query</th><th>Timestamp</th><th>Success</th></tr></thead>
                     <tbody id="logsTableBody"></tbody>
@@ -364,7 +131,6 @@
 </div>
 
 <script>
-    // ==================== Admin Helper Functions ====================
     let adminToken = localStorage.getItem('adminToken') || null;
 
     async function adminFetch(url, options = {}) {
@@ -381,15 +147,7 @@
         return res;
     }
 
-    function showMessage(element, text, isError = false) {
-        if (element) {
-            element.innerText = text;
-            element.style.color = isError ? '#fb7185' : '#22c55e';
-            setTimeout(() => { if (element) element.innerText = ''; }, 3000);
-        }
-    }
-
-    // ==================== Admin Login ====================
+    // Admin Login
     document.getElementById('adminLoginBtn').onclick = async () => {
         const username = document.getElementById('adminUsername').value;
         const password = document.getElementById('adminPassword').value;
@@ -429,7 +187,7 @@
         location.reload();
     };
 
-    // ==================== Users Management ====================
+    // Load Users
     async function loadUsers() {
         try {
             const res = await adminFetch('/admin/users');
@@ -451,7 +209,7 @@
                     <button class="delete-user" data-id="${u.userId}" style="background:#ef4444;">Delete</button>
                 `;
             }
-            // Attach limit change
+            // Event listeners
             document.querySelectorAll('.limit-input').forEach(inp => {
                 inp.addEventListener('change', async (e) => {
                     const userId = inp.dataset.id;
@@ -460,7 +218,6 @@
                     loadUsers();
                 });
             });
-            // Block/Unblock
             document.querySelectorAll('.block-toggle').forEach(btn => {
                 btn.onclick = async () => {
                     const userId = btn.dataset.id;
@@ -469,25 +226,22 @@
                     loadUsers();
                 };
             });
-            // Delete
             document.querySelectorAll('.delete-user').forEach(btn => {
                 btn.onclick = async () => {
                     if (confirm('Delete this user permanently?')) {
                         await adminFetch(`/admin/users/${btn.dataset.id}`, { method: 'DELETE' });
                         loadUsers();
+                        loadUserSelectors();
                     }
                 };
             });
-            // View message
             document.querySelectorAll('.msg-view').forEach(btn => {
-                btn.onclick = () => {
-                    const msg = btn.dataset.msg || 'No message';
-                    alert(`Message for ${btn.dataset.id}:\n${msg}`);
-                };
+                btn.onclick = () => alert(`Message for ${btn.dataset.id}:\n${btn.dataset.msg || 'No message'}`);
             });
         } catch (err) { console.error(err); }
     }
 
+    // Create User - IMPROVED ERROR HANDLING
     document.getElementById('createUserBtn').onclick = async () => {
         const userId = document.getElementById('newUserId').value.trim();
         const username = document.getElementById('newUsername').value.trim();
@@ -503,20 +257,25 @@
                 method: 'POST',
                 body: JSON.stringify({ userId, username, email, password, dailyLimit })
             });
+            const data = await res.json();
             if (res.ok) {
-                alert('User created');
+                alert('User created successfully!');
                 document.getElementById('newUserId').value = '';
                 document.getElementById('newPassword').value = '';
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newEmail').value = '';
                 loadUsers();
                 loadUserSelectors();
             } else {
-                const err = await res.json();
-                alert(err.error);
+                // Show the actual error from the server
+                alert('Error: ' + (data.error || 'Unknown error'));
             }
-        } catch (err) { alert('Error creating user'); }
+        } catch (err) {
+            alert('Network error: ' + err.message);
+        }
     };
 
-    // ==================== API Configs ====================
+    // API Configs
     async function loadApiConfigs() {
         try {
             const res = await adminFetch('/admin/api-configs');
@@ -532,7 +291,6 @@
                 row.insertCell(4).innerHTML = `<input class="api-blacklist" data-key="${cfg.key}" value="${(cfg.extraBlacklist || []).join(',')}" style="min-width:180px">`;
                 row.insertCell(5).innerHTML = `<button class="save-api" data-key="${cfg.key}">Save</button>`;
             }
-            // Save listeners
             document.querySelectorAll('.save-api').forEach(btn => {
                 btn.onclick = async () => {
                     const key = btn.dataset.key;
@@ -551,7 +309,7 @@
         } catch (err) { console.error(err); }
     }
 
-    // ==================== Logs ====================
+    // Logs
     async function loadLogs(userId = '') {
         try {
             let url = '/admin/logs?limit=200';
@@ -590,7 +348,7 @@
     };
     document.getElementById('refreshLogsIcon').onclick = () => loadLogs();
 
-    // ==================== Send Message ====================
+    // Send Message
     document.getElementById('sendMessageBtn').onclick = async () => {
         const userId = document.getElementById('messageUserId').value;
         const message = document.getElementById('messageText').value.trim();
@@ -603,14 +361,14 @@
             body: JSON.stringify({ userId, message })
         });
         if (res.ok) {
-            showMessage(document.getElementById('messageResult'), 'Message sent successfully', false);
+            alert('Message sent');
             document.getElementById('messageText').value = '';
         } else {
-            showMessage(document.getElementById('messageResult'), 'Failed to send', true);
+            alert('Failed to send');
         }
     };
 
-    // ==================== Tab Switching ====================
+    // Tab switching
     const tabs = ['users', 'api', 'logs', 'message'];
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -626,9 +384,8 @@
         });
     });
 
-    // ==================== Auto-login check ====================
+    // Auto-login check
     if (adminToken) {
-        // Verify token by fetching users
         fetch('/admin/users', { headers: { 'Authorization': `Bearer ${adminToken}` } })
             .then(res => {
                 if (res.ok) {
