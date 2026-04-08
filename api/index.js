@@ -79,17 +79,23 @@ async function connectToDatabase() {
   if (!process.env.MONGODB_URI) {
     throw new Error('MONGODB_URI environment variable is not set');
   }
-  const conn = await mongoose.connect(process.env.MONGODB_URI, {
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 10000,
-  });
-  cachedDb = conn;
-  console.log('✅ MongoDB connected');
-
-  // Seed only once
-  await seedApiConfigs();
-  await seedDefaultUser();
-  return conn;
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 15000,
+      // Add authSource if needed (usually not required with srv)
+    });
+    cachedDb = conn;
+    console.log('✅ MongoDB connected successfully');
+    
+    // Seed data only once
+    await seedApiConfigs();
+    await seedDefaultUser();
+    return conn;
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+    throw err;
+  }
 }
 
 async function seedApiConfigs() {
@@ -97,6 +103,7 @@ async function seedApiConfigs() {
     const exists = await ApiConfig.findOne({ key });
     if (!exists) {
       await ApiConfig.create({ key, ...cfg });
+      console.log(`📝 Seeded API config: ${key}`);
     }
   }
 }
@@ -113,6 +120,8 @@ async function seedDefaultUser() {
       dailyLimit: 200
     });
     console.log('✅ Default user created: Jahid@Ansari / Jahid@2026$');
+  } else {
+    console.log('ℹ️ Default user already exists');
   }
 }
 
@@ -144,10 +153,9 @@ function authAdmin(req, res, next) {
   }
 }
 
-// Helper to wrap async routes
 const wrap = fn => (req, res, next) => fn(req, res, next).catch(next);
 
-// ==================== User Routes ====================
+// ==================== Routes ====================
 app.post('/user/login', wrap(async (req, res) => {
   await connectToDatabase();
   const { userId, password } = req.body;
@@ -215,7 +223,6 @@ app.get('/api', authUser, wrap(async (req, res) => {
   user.searchesToday += 1;
   await user.save();
 
-  // Clean response (blacklist)
   function cleanObject(obj, blacklist) {
     if (!obj || typeof obj !== 'object') return obj;
     const newObj = Array.isArray(obj) ? [] : {};
@@ -233,7 +240,7 @@ app.get('/api', authUser, wrap(async (req, res) => {
   res.json(result);
 }));
 
-// ==================== Admin Routes ====================
+// Admin routes
 app.post('/admin/login', wrap(async (req, res) => {
   const { username, password, pin, key } = req.body;
   if (username === process.env.ADMIN_USERNAME &&
@@ -327,7 +334,7 @@ app.post('/admin/send-message', authAdmin, wrap(async (req, res) => {
   res.json({ success: true });
 }));
 
-// ==================== Serve HTML ====================
+// Serve HTML
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
@@ -335,7 +342,7 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'admin.html'));
 });
 
-// ==================== Global Error Handler ====================
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({ error: err.message || 'Internal server error' });
